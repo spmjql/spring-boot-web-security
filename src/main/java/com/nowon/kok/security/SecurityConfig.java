@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -16,6 +17,12 @@ public class SecurityConfig {
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(13);
 	}
+	
+	@Bean
+	UserDetailsService userDetailsService() {
+		return new MyUserDetailsService();
+	}
+	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
@@ -27,7 +34,8 @@ public class SecurityConfig {
 					//.antMatchers("/admin/**").hasAnyRole("ADMIN")
 					.anyRequest().authenticated()//나머지는 인증(로그인)해야해요
 					)
-			//.formLogin(Customizer.withDefaults())
+//			.formLogin(Customizer.withDefaults())
+			
 			.formLogin(formLogin->formLogin
 					.loginPage("/signin")//get
 					.loginProcessingUrl("/signin")//post
@@ -35,6 +43,7 @@ public class SecurityConfig {
 					.passwordParameter("pass")
 					.permitAll()
 					)
+					
 				;
 
 		return http.build();
